@@ -1,11 +1,15 @@
 class PlantProfile {
-  String name;
-  String plantSpecies;
-  String img;
+  final String plantName;
+  final String plantSpecies;
+  final String plantImage;
+  final String plantDescription;
+  final DateTime timeCreated;
 
   PlantProfile({
-    this.name = 'placeholder',
-    this.plantSpecies = 'Species placeholder',
-    this.img = 'https://placehold.co/200x200.png',
+    required this.plantName,
+    required this.plantSpecies,
+    required this.plantImage,
+    required this.plantDescription,
+    required this.timeCreated,
   });
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 
+import 'new_plant_view.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -15,28 +17,46 @@ class _MyHomePageState extends State<MyHomePage> {
   // REMOVE LATER, HARDCODED PLANT SAMPLE
   final List<PlantProfile> plants = [
     PlantProfile(
-      name: 'Aloe Vera',
-      plantSpecies: 'Aloe'
+      plantName: 'Aloe Vera',
+      plantSpecies: 'Aloe',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime(2023, 10, 15, 8, 30),
     ),
     PlantProfile(
-      name: 'Snake Plant',
-      plantSpecies: 'Sansevieria'
+      plantName: 'Snake Plant',
+      plantSpecies: 'Sansevieria',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime.utc(2024, 2, 29, 14, 45, 30, 123),
     ),
     PlantProfile(
-      name: 'Monstera',
-      plantSpecies: 'Monstera Deliciosa'
+      plantName: 'Monstera',
+      plantSpecies: 'Monstera Deliciosa',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime.parse('1999-12-31T23:59:59Z'),
     ),
     PlantProfile(
-      name: 'Peace Lily',
-      plantSpecies: 'Spathiphyllum'
+      plantName: 'Peace Lily',
+      plantSpecies: 'Spathiphyllum',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime.parse('2015-05-20T04:15:00-07:00'),
     ),
     PlantProfile(
-      name: 'Cactus',
-      plantSpecies: 'Cactaceae'
+      plantName: 'Cactus',
+      plantSpecies: 'Cactaceae',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime(2050, 1, 1),
     ),
     PlantProfile(
-      name: 'Pothos',
-      plantSpecies: 'Epipremnum Aureum'
+      plantName: 'Pothos',
+      plantSpecies: 'Epipremnum Aureum',
+      plantImage: '/someimage/somewhere',
+      plantDescription: 'lorem impsum',
+      timeCreated: DateTime.now(),
     ),
   ];
 
@@ -82,13 +102,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: Image.network(
-                            plant.img,
+                            plant.plantImage,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       Text(
-                        plant.name,
+                        plant.plantName,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -105,6 +125,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const NewPlantView()),
+            );
+          },
+          child: const Icon(Icons.add),
       ),
     );
   }
