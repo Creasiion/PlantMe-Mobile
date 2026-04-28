@@ -49,30 +49,61 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: GridView.count(
-          crossAxisCount: 3, // 3 columns
-          crossAxisSpacing: 5,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1,
-          children: plants.map((plant) {
-            return Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      plant.img,
-                      fit: BoxFit.cover,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Row(
+                children: const [
+                  Text(
+                    'My Plants',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                Text(
-                  plant.name,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            );
-          }).toList(),
+                  SizedBox(width: 8),
+                  Icon(Icons.star), // placeholder for "view all"
+                ],
+              ),
+            ),
+
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 10),
+            ),
+
+            SliverGrid( // Later needs onclick to specified profile
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  final plant = plants[index];
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            plant.img,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        plant.name,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  );
+                },
+                childCount: plants.length,
+              ),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 10,
+                childAspectRatio: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );
