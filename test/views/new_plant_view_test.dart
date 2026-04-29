@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/views/new_plant_view.dart';
 
@@ -12,6 +13,9 @@ Widget _wrapInApp(Widget child) {
 }
 
 void main() {
+    setUpAll(() async {
+    dotenv.testLoad(fileInput: 'PLANT_ID_API_KEY=test_key');
+  });
   group('NewPlantView', () {
     testWidgets('displays all input fields and the image picker', (tester) async {
       await tester.pumpWidget(_wrapInApp(const NewPlantView()));
