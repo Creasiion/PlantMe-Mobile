@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 import 'package:plant_me/providers/plant_provider.dart';
+import 'package:plant_me/services/plant_id_service.dart';
 import 'package:provider/provider.dart';
 
 class NewPlantView extends StatefulWidget {
@@ -16,19 +17,109 @@ class _NewPlantViewState extends State<NewPlantView> {
   final _plantNameController = TextEditingController();
   final _plantSpeciesController = TextEditingController();
   final _plantDescriptionController = TextEditingController();
+  final _searchController = TextEditingController();
 
   File? _selectedPlantImage;
+  bool _identifying = false;
   final ImagePicker _picker = ImagePicker();
+  final PlantIdService _plantIdService = PlantIdService();
 
-  Future<void> _pickImageFromSource(ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(source: source);
+  // Called on startup to recover image if Android killed
+  // the activity while the gallery was open.
 
-    if (pickedFile != null) {
+  @override
+  void initState() {
+    super.initState();
+    _retrieveLostData();
+  }
+
+  Future<void> _retrieveLostData() async {
+    final LostDataResponse response = await _picker.retrieveLostData();
+    if (response.file != null) {
+      final imageFile = File(response.file!.path);
+
       setState(() {
-        _selectedPlantImage = File(pickedFile.path);
+        _selectedPlantImage = imageFile;
+        _identifying = true;
       });
+
+      // Run identification on the recovered image 
+      final result = await _plantIdService.identifyFromImage(imageFile);
+      if (result != null) {
+        setState(() {
+          _plantSpeciesController.text = result.species;
+          _plantDescriptionController.text = result.description;
+          _identifying = false;
+        });
+      } else {
+        setState(() => _identifying = false);
+      }
     }
   }
+
+  Future<void> _pickImageFromSource(ImageSource source) async {
+    // maxWidth/maxHeight reduces memory footprint of the image.
+
+    final XFile? pickedFile = await _picker.pickImage(
+      source: source,
+      maxWidth: 1024,
+      maxHeight: 1024,
+    );
+
+    if (pickedFile != null) {
+      final imageFile = File(pickedFile.path);
+
+      setState(() {
+        _selectedPlantImage = imageFile;
+        _identifying = true; // show spinner while Plant.id runs
+      });
+
+      // Call Plant.id as soon as image is picked
+      if (_plantSpeciesController.text.trim().isEmpty) {
+        final result = await _plantIdService.identifyFromImage(imageFile);
+        if (result != null) {
+          setState(() {
+            _plantSpeciesController.text = result.species;
+            _plantDescriptionController.text = result.description;
+            _identifying = false;
+            });
+             } else {
+              setState(() => _identifying = false);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Could not identify plant, please fill in manually')),
+      );
+    }
+  }
+} else {
+  setState(() => _identifying = false);
+}
+    }
+  }
+
+  Future<void> _searchByName() async {
+  final query = _searchController.text.trim();
+  if (query.isEmpty) return;
+
+  setState(() => _identifying = true);
+
+  final result = await _plantIdService.searchByName(query);
+
+  if (result != null) {
+    setState(() {
+      _plantSpeciesController.text = result.species;
+      _plantDescriptionController.text = result.description;
+      _identifying = false;
+    });
+  } else {
+    setState(() => _identifying = false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No plant found, try a different name')),
+      );
+    }
+  }
+}
 
   void _showImageSourceChooser() {
     showModalBottomSheet(
@@ -65,7 +156,7 @@ class _NewPlantViewState extends State<NewPlantView> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please pick an image before saving')),
       );
-      return; // XFile is weird, this lets us assert we have an actual image
+      return;
     }
 
     final plantProfile = PlantProfile(
@@ -86,7 +177,10 @@ class _NewPlantViewState extends State<NewPlantView> {
       appBar: AppBar(
         title: const Center(child: Text('New Plant Profile')),
         actions: [
-          IconButton(onPressed: _savePlantProfile, icon: const Icon(Icons.save))
+          IconButton(
+            onPressed: _savePlantProfile,
+            icon: const Icon(Icons.save),
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -108,9 +202,12 @@ class _NewPlantViewState extends State<NewPlantView> {
                 border: OutlineInputBorder(),
               ),
             ),
+            
             const SizedBox(height: 16),
+            // Tapping the image box opens the source chooser.
+
             GestureDetector(
-              onTap: _showImageSourceChooser,
+              onTap: _identifying ? null : _showImageSourceChooser,
               child: Container(
                 height: 200,
                 width: double.infinity,
@@ -119,13 +216,37 @@ class _NewPlantViewState extends State<NewPlantView> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: _selectedPlantImage != null
-                    ? Image.file(_selectedPlantImage!, fit: BoxFit.cover)
-                    : const Center(
-                  child: Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
-                ),
+                child: _identifying
+                    ? const Center(child: CircularProgressIndicator())
+                    : _selectedPlantImage != null
+                        ? Image.file(_selectedPlantImage!, fit: BoxFit.cover)
+                        : const Center(
+                            child: Icon(
+                              Icons.add_a_photo,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                          ),
               ),
             ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      labelText: 'or Search by name',
+                      border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _identifying ? null : _searchByName,
+                    child: const Text('Search'),
+                    ),
+                  ],
+                ),
             const SizedBox(height: 16),
             TextField(
               controller: _plantDescriptionController,
@@ -148,7 +269,6 @@ class _NewPlantViewState extends State<NewPlantView> {
     _plantNameController.dispose();
     _plantSpeciesController.dispose();
     _plantDescriptionController.dispose();
-
     super.dispose();
   }
 }

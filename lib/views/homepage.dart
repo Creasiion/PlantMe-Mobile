@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 import 'dart:io';
 import 'new_plant_view.dart';
+import 'package:plant_me/providers/plant_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -62,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final plants = context.watch<PlantProvider>().plantProfiles;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
