@@ -75,6 +75,51 @@ class _MyHomePageState extends State<MyHomePage> {
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
+                child: Padding(padding: EdgeInsets.only(bottom: 32),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Image.network(
+                            'https://placehold.co/200x200.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back!',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            'Let’s check on your plants 🌱',
+                          ),
+                        ],
+                      ),
+                    )
+
+                  ],
+                )
+                )
+            ),
+            SliverToBoxAdapter(
               child: Row(
                 children: const [
                   Text(
