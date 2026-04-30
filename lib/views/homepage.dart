@@ -65,6 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final plants = context.watch<PlantProvider>().plantProfiles;
+    final hasPlants = plants.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -86,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Image.network(
-                            'https://placehold.co/200x200.png',
+                            'https://img.magnific.com/free-vector/houseplant-sticker-botanical-doodle-vector_53876-156464.jpg',
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -101,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Welcome back!',
+                            hasPlants ? 'Welcome back!' : 'Get Started!',
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
@@ -109,7 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           SizedBox(height: 6),
                           Text(
-                            'Let’s check on your plants 🌱',
+                            hasPlants
+                                ? 'Let’s check on your plants 🌱'
+                                : 'Create a profile by clicking the + in the bottom-right corner',
                           ),
                         ],
                       ),
