@@ -6,6 +6,8 @@ import 'package:plant_me/views/new_task_view.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'homepage.dart';
+
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
 
@@ -144,6 +146,31 @@ class _CalendarViewState extends State<CalendarView> {
           );
         },
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
+          ),
+        ],
+
+        currentIndex: 1,
+
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const MyHomePage(title: 'PlantMe'),
+              ),
+            );
+          }
+        },
       ),
     );
   }
