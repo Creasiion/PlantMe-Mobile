@@ -29,6 +29,7 @@ class _CalendarViewState extends State<CalendarView> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Care Calendar'),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
