@@ -13,7 +13,8 @@ class AllPlantsView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('All Plants'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('All Plants'),
       ),
 
       body: Padding(
