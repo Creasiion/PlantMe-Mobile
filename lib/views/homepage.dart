@@ -4,6 +4,7 @@ import 'new_plant_view.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:plant_me/views/calendar_view.dart';
+import 'package:plant_me/views/all_plant_profiles_view.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -89,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SliverToBoxAdapter(
               child: Row(
-                children: const [
+                children: [
                   Text(
                     'My Plants',
                     style: TextStyle(
@@ -98,7 +99,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   SizedBox(width: 8),
-                  Icon(Icons.star), // placeholder for "view all"
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AllPlantsView(),
+                        ),
+                      );
+                    },
+                    label: const Text('View All'),
+                    icon: const Icon(Icons.star),
+                  )
                 ],
               ),
             ),
@@ -108,8 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             SliverGrid( // Later needs onclick to specified profile
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+              delegate: SliverChildBuilderDelegate((context, index) {
                   final plant = plants[index];
 
                   return Column(
@@ -130,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   );
                 },
-                childCount: plants.length,
+                childCount: plants.length > 9 ? 9 : plants.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
