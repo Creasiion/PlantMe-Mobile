@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plant_me/database/app_database.dart';
 import 'package:plant_me/providers/plant_provider.dart';
+import 'package:plant_me/providers/task_provider.dart';
 import 'views/homepage.dart';
 import 'package:provider/provider.dart';
 
@@ -16,9 +17,15 @@ Future<void> main() async {
   final plantProvider = PlantProvider(database.plantDao);
   await plantProvider.loadPlants();
 
+  final taskProvider = TaskProvider(database.taskDao);
+  await taskProvider.loadInstances();
+
   runApp(
-    ChangeNotifierProvider.value(
-      value: plantProvider,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: plantProvider),
+        ChangeNotifierProvider.value(value: taskProvider),
+      ],
       child: const MyApp(),
     ),
   );

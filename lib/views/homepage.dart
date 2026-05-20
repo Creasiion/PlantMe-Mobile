@@ -3,6 +3,7 @@ import 'dart:io';
 import 'new_plant_view.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:plant_me/views/calendar_view.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -24,7 +25,17 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-      ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.calendar_month),
+              onPressed: () {
+                Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const CalendarView()),
+                );
+              },
+            ), // temporary calendarView button
+          ],
+        ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: CustomScrollView(

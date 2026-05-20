@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 import 'package:plant_me/database/plant_dao.dart';
@@ -37,6 +38,7 @@ PlantProfile _makePlant({
     plantImagePath: 'test/dummy.jpg',
     plantDescription: 'Description',
     timeCreated: created ?? DateTime.now(),
+    colorValue: Colors.green.toARGB32(),
   );
 }
 
@@ -80,6 +82,16 @@ void main() {
       expect(sorted[0].plantName, 'Newest');
       expect(sorted[1].plantName, 'Middle');
       expect(sorted[2].plantName, 'Oldest');
+    });
+
+    test('loadPlants populates plantProfiles from dao', () async {
+      final dao = FakePlantDao();
+      await dao.insertPlant(_makePlant(name: 'Preloaded'));
+      final provider = PlantProvider(dao);
+      await provider.loadPlants();
+
+      expect(provider.plantProfiles.length, 1);
+      expect(provider.plantProfiles.first.plantName, 'Preloaded');
     });
   });
 }

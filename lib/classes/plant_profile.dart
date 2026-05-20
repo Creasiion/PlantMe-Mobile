@@ -1,4 +1,5 @@
 import 'package:floor/floor.dart';
+import 'package:flutter/material.dart';
 
 @entity
 class PlantProfile {
@@ -9,6 +10,7 @@ class PlantProfile {
   final String plantImagePath;
   final String plantDescription;
   final DateTime timeCreated;
+  final int colorValue; // stores Color.value as int
 
   PlantProfile({
     this.id,
@@ -17,5 +19,8 @@ class PlantProfile {
     required this.plantImagePath,
     required this.plantDescription,
     required this.timeCreated,
+    required this.colorValue,
   });
+
+  Color get color => Color(colorValue);
 }
