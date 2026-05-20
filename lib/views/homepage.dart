@@ -26,16 +26,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.calendar_month),
-              onPressed: () {
-                Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const CalendarView()),
-                );
-              },
-            ), // temporary calendarView button
-          ],
         ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -160,6 +150,31 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           },
           child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
+          ),
+        ],
+
+        currentIndex: 0,
+
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CalendarView(),
+              ),
+            );
+          }
+        },
       ),
     );
   }
