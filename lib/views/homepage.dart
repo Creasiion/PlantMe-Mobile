@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plant_me/classes/plant_profile.dart';
 import 'dart:io';
 import 'new_plant_view.dart';
 import 'package:plant_me/providers/plant_provider.dart';
@@ -16,52 +15,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // REMOVE LATER, HARDCODED PLANT SAMPLE
-  final List<PlantProfile> plants = [
-    PlantProfile(
-      plantName: 'Aloe Vera',
-      plantSpecies: 'Aloe',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime(2023, 10, 15, 8, 30),
-    ),
-    PlantProfile(
-      plantName: 'Snake Plant',
-      plantSpecies: 'Sansevieria',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime.utc(2024, 2, 29, 14, 45, 30, 123),
-    ),
-    PlantProfile(
-      plantName: 'Monstera',
-      plantSpecies: 'Monstera Deliciosa',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime.parse('1999-12-31T23:59:59Z'),
-    ),
-    PlantProfile(
-      plantName: 'Peace Lily',
-      plantSpecies: 'Spathiphyllum',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime.parse('2015-05-20T04:15:00-07:00'),
-    ),
-    PlantProfile(
-      plantName: 'Cactus',
-      plantSpecies: 'Cactaceae',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime(2050, 1, 1),
-    ),
-    PlantProfile(
-      plantName: 'Pothos',
-      plantSpecies: 'Epipremnum Aureum',
-      plantImage: File('/someimage/somewhere'),
-      plantDescription: 'lorem impsum',
-      timeCreated: DateTime.now(),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final plants = context.watch<PlantProvider>().plantProfiles;
@@ -154,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: Image.file(
-                            plant.plantImage,
+                            File(plant.plantImagePath),
                             fit: BoxFit.cover
                           ),
                         ),

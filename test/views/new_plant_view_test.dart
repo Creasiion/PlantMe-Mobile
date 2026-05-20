@@ -4,10 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/views/new_plant_view.dart';
+import '../providers/plant_provider_test.dart' show FakePlantDao;
 
 Widget _wrapInApp(Widget child) {
   return ChangeNotifierProvider(
-    create: (_) => PlantProvider(),
+    create: (_) => PlantProvider(FakePlantDao()),
     child: MaterialApp(home: child),
   );
 }
