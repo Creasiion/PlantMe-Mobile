@@ -1,16 +1,20 @@
-import 'dart:io';
-// Probably going to be updated when we know exactly what is coming from API
+import 'package:floor/floor.dart';
+
+@entity
 class PlantProfile {
+  @PrimaryKey(autoGenerate: true)
+  final int? id;
   final String plantName;
   final String plantSpecies;
-  final File plantImage;
+  final String plantImagePath;
   final String plantDescription;
   final DateTime timeCreated;
 
   PlantProfile({
+    this.id,
     required this.plantName,
     required this.plantSpecies,
-    required this.plantImage,
+    required this.plantImagePath,
     required this.plantDescription,
     required this.timeCreated,
   });

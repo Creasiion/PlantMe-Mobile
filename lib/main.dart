@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:plant_me/database/app_database.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'views/homepage.dart';
 import 'package:provider/provider.dart';
@@ -7,10 +8,17 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  
+
+  final database = await $FloorAppDatabase
+      .databaseBuilder('plant_me.db')
+      .build();
+
+  final plantProvider = PlantProvider(database.plantDao);
+  await plantProvider.loadPlants();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => PlantProvider(),
+    ChangeNotifierProvider.value(
+      value: plantProvider,
       child: const MyApp(),
     ),
   );

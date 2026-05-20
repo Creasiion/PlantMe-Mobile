@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/services/plant_id_service.dart';
@@ -151,7 +152,7 @@ class _NewPlantViewState extends State<NewPlantView> {
     );
   }
 
-  void _savePlantProfile() {
+  Future<void> _savePlantProfile() async {
     if (_selectedPlantImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please pick an image before saving')),
@@ -159,16 +160,21 @@ class _NewPlantViewState extends State<NewPlantView> {
       return;
     }
 
+    // Copy image to permanent app documents directory
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = 'plant_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final permanentImage = await _selectedPlantImage!.copy('${appDir.path}/$fileName');
+
     final plantProfile = PlantProfile(
       plantName: _plantNameController.text.trim(),
       plantSpecies: _plantSpeciesController.text.trim(),
-      plantImage: _selectedPlantImage!,
+      plantImagePath: permanentImage.path,
       plantDescription: _plantDescriptionController.text.trim(),
       timeCreated: DateTime.now(),
     );
 
-    context.read<PlantProvider>().addPlantProfile(plantProfile);
-    Navigator.pop(context);
+    await context.read<PlantProvider>().addPlantProfile(plantProfile);
+    if (mounted) Navigator.pop(context);
   }
 
   @override
