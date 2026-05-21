@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `PlantProfile` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantName` TEXT NOT NULL, `plantSpecies` TEXT NOT NULL, `plantImagePath` TEXT NOT NULL, `plantDescription` TEXT NOT NULL, `timeCreated` INTEGER NOT NULL, `colorValue` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `PlantTask` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantProfileId` INTEGER NOT NULL, `taskType` TEXT NOT NULL, `customNote` TEXT, `recurrenceType` TEXT NOT NULL, `recurrenceInterval` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDateMillis` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `PlantTask` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantProfileId` INTEGER NOT NULL, `taskType` TEXT NOT NULL, `customNote` TEXT, `recurrenceType` TEXT NOT NULL, `recurrenceInterval` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDateMillis` INTEGER, `reminderTimeMinutes` INTEGER)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `PlantTaskInstance` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantTaskId` INTEGER NOT NULL, `plantProfileId` INTEGER NOT NULL, `dueDate` INTEGER NOT NULL, `isCompleted` INTEGER NOT NULL, `completedAtMillis` INTEGER, `taskType` TEXT NOT NULL, `customNote` TEXT)');
 
@@ -223,7 +223,8 @@ class _$PlantTaskDao extends PlantTaskDao {
                   'recurrenceType': item.recurrenceType,
                   'recurrenceInterval': item.recurrenceInterval,
                   'startDate': _dateTimeConverter.encode(item.startDate),
-                  'endDateMillis': item.endDateMillis
+                  'endDateMillis': item.endDateMillis,
+                  'reminderTimeMinutes': item.reminderTimeMinutes
                 }),
         _plantTaskInstanceInsertionAdapter = InsertionAdapter(
             database,
@@ -264,7 +265,8 @@ class _$PlantTaskDao extends PlantTaskDao {
                   'recurrenceType': item.recurrenceType,
                   'recurrenceInterval': item.recurrenceInterval,
                   'startDate': _dateTimeConverter.encode(item.startDate),
-                  'endDateMillis': item.endDateMillis
+                  'endDateMillis': item.endDateMillis,
+                  'reminderTimeMinutes': item.reminderTimeMinutes
                 }),
         _plantTaskInstanceDeletionAdapter = DeletionAdapter(
             database,
@@ -309,7 +311,8 @@ class _$PlantTaskDao extends PlantTaskDao {
             recurrenceType: row['recurrenceType'] as String,
             recurrenceInterval: row['recurrenceInterval'] as int,
             startDate: _dateTimeConverter.decode(row['startDate'] as int),
-            endDateMillis: row['endDateMillis'] as int?),
+            endDateMillis: row['endDateMillis'] as int?,
+            reminderTimeMinutes: row['reminderTimeMinutes'] as int?),
         arguments: [plantProfileId]);
   }
 
@@ -324,7 +327,8 @@ class _$PlantTaskDao extends PlantTaskDao {
             recurrenceType: row['recurrenceType'] as String,
             recurrenceInterval: row['recurrenceInterval'] as int,
             startDate: _dateTimeConverter.decode(row['startDate'] as int),
-            endDateMillis: row['endDateMillis'] as int?));
+            endDateMillis: row['endDateMillis'] as int?,
+            reminderTimeMinutes: row['reminderTimeMinutes'] as int?));
   }
 
   @override
@@ -395,7 +399,8 @@ class _$PlantTaskDao extends PlantTaskDao {
             recurrenceType: row['recurrenceType'] as String,
             recurrenceInterval: row['recurrenceInterval'] as int,
             startDate: _dateTimeConverter.decode(row['startDate'] as int),
-            endDateMillis: row['endDateMillis'] as int?),
+            endDateMillis: row['endDateMillis'] as int?,
+            reminderTimeMinutes: row['reminderTimeMinutes'] as int?),
         arguments: [id]);
   }
 
@@ -406,8 +411,8 @@ class _$PlantTaskDao extends PlantTaskDao {
   }
 
   @override
-  Future<void> insertInstance(PlantTaskInstance instance) async {
-    await _plantTaskInstanceInsertionAdapter.insert(
+  Future<int> insertInstance(PlantTaskInstance instance) {
+    return _plantTaskInstanceInsertionAdapter.insertAndReturnId(
         instance, OnConflictStrategy.abort);
   }
 

@@ -18,9 +18,10 @@ class FakeTaskDao extends PlantTaskDao {
   }
 
   @override
-  Future<void> insertInstance(PlantTaskInstance instance) async {
+  Future<int> insertInstance(PlantTaskInstance instance) async {
+    final id = _nextInstanceId++;
     _instances.add(PlantTaskInstance(
-      id: _nextInstanceId++,
+      id: id,
       plantTaskId: instance.plantTaskId,
       plantProfileId: instance.plantProfileId,
       dueDate: instance.dueDate,
@@ -29,6 +30,7 @@ class FakeTaskDao extends PlantTaskDao {
       isCompleted: instance.isCompleted,
       completedAtMillis: instance.completedAtMillis,
     ));
+    return id;
   }
 
   @override

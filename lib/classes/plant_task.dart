@@ -1,4 +1,5 @@
 import 'package:floor/floor.dart';
+import 'package:flutter/material.dart';
 
 @entity
 class PlantTask {
@@ -11,6 +12,7 @@ class PlantTask {
   final int recurrenceInterval; // IE 7 for every 7 days, 1 for daily
   final DateTime startDate;
   final int? endDateMillis; // store as int instead of DateTime?
+  final int? reminderTimeMinutes; // minutes since midnight (e.g. 540 = 9:00 AM)
 
   PlantTask({
     this.id,
@@ -21,6 +23,7 @@ class PlantTask {
     required this.recurrenceInterval,
     required this.startDate,
     this.endDateMillis,
+    this.reminderTimeMinutes,
   });
 
   PlantTask copyWith({int? id}) {
@@ -33,8 +36,13 @@ class PlantTask {
     recurrenceInterval: recurrenceInterval,
     startDate: startDate,
     endDateMillis: endDateMillis,
+    reminderTimeMinutes: reminderTimeMinutes,
   );
 }
+
+  TimeOfDay? get reminderTime => reminderTimeMinutes != null
+      ? TimeOfDay(hour: reminderTimeMinutes! ~/ 60, minute: reminderTimeMinutes! % 60)
+      : null;
 
   // fxn to get DateTime back 
   DateTime? get endDate => endDateMillis != null

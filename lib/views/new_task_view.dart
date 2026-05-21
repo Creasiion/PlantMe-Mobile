@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:plant_me/classes/plant_task.dart';
-import 'package:plant_me/classes/plant_task_instance.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/providers/task_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +20,7 @@ class _NewTaskViewState extends State<NewTaskView> {
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
   int? _selectedPlantId;
+  TimeOfDay? _reminderTime;
 
   final List<String> _taskTypes = ['watering', 'light', 'fertilizing', 'custom'];
 
@@ -44,6 +44,14 @@ class _NewTaskViewState extends State<NewTaskView> {
     if (picked != null) setState(() => _endDate = picked);
   }
 
+  Future<void> _pickReminderTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime ?? const TimeOfDay(hour: 9, minute: 0),
+    );
+    if (picked != null) setState(() => _reminderTime = picked);
+  }
+
   Future<void> _saveTask() async {
     if (_selectedPlantId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,9 +72,15 @@ class _NewTaskViewState extends State<NewTaskView> {
       recurrenceInterval: interval,
       startDate: _startDate,
       endDateMillis: _endDate?.millisecondsSinceEpoch,
+      reminderTimeMinutes: _reminderTime != null
+          ? _reminderTime!.hour * 60 + _reminderTime!.minute
+          : null,
     );
 
-    await context.read<TaskProvider>().addTask(task);
+    final plantName = context.read<PlantProvider>().plantProfiles
+        .firstWhere((p) => p.id == _selectedPlantId)
+        .plantName;
+    await context.read<TaskProvider>().addTask(task, plantName: plantName);
     if (mounted) Navigator.pop(context);
   }
 
@@ -123,7 +137,7 @@ class _NewTaskViewState extends State<NewTaskView> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              value: _selectedTaskType,
+              initialValue: _selectedTaskType,
               items: _taskTypes.map((type) {
                 return DropdownMenuItem<String>(
                   value: type,
@@ -174,7 +188,7 @@ class _NewTaskViewState extends State<NewTaskView> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              value: _recurrenceType,
+              initialValue: _recurrenceType,
               items: const [
                 DropdownMenuItem(value: 'none', child: Text('No recurrence')),
                 DropdownMenuItem(value: 'daily', child: Text('Daily')),
@@ -215,6 +229,34 @@ class _NewTaskViewState extends State<NewTaskView> {
                 ),
               ),
             ],
+
+            const SizedBox(height: 16),
+
+            // Reminder time
+            const Text('Reminder Time', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(_reminderTime != null
+                  ? _reminderTime!.format(context)
+                  : 'No reminder'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_reminderTime != null)
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => setState(() => _reminderTime = null),
+                    ),
+                  const Icon(Icons.access_time),
+                ],
+              ),
+              onTap: _pickReminderTime,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: const BorderSide(color: Colors.grey),
+              ),
+            ),
           ],
         ),
       ),

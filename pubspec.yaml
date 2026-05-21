@@ -42,7 +42,11 @@ dependencies:
   path_provider: ^2.1.0
   flutter_colorpicker: ^1.1.0
   table_calendar: ^3.1.2
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+  flutter_timezone: ^4.1.1
 
+  sqflite: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

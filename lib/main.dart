@@ -3,12 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plant_me/database/app_database.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/providers/task_provider.dart';
+import 'package:plant_me/services/notification_service.dart';
 import 'views/homepage.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await NotificationService().init();
 
   final database = await $FloorAppDatabase
       .databaseBuilder('plant_me.db')
@@ -17,7 +19,10 @@ Future<void> main() async {
   final plantProvider = PlantProvider(database.plantDao);
   await plantProvider.loadPlants();
 
-  final taskProvider = TaskProvider(database.taskDao);
+  final taskProvider = TaskProvider(
+    database.taskDao,
+    notificationService: NotificationService(),
+  );
   await taskProvider.loadInstances();
 
   runApp(

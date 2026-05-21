@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:plant_me/classes/plant_task.dart';
 import 'package:plant_me/classes/plant_task_instance.dart';
 import 'package:plant_me/database/plant_task_dao.dart';
-import 'package:plant_me/classes/plant_task_instance.dart';
+import 'package:plant_me/services/notification_service.dart';
 
 class TaskProvider extends ChangeNotifier {
   final PlantTaskDao _taskDao;
+  final NotificationService? _notificationService;
   List<PlantTaskInstance> _instances = [];
 
-  TaskProvider(this._taskDao);
+  TaskProvider(this._taskDao, {NotificationService? notificationService})
+      : _notificationService = notificationService;
 
   List<PlantTaskInstance> get instances => _instances;
 
@@ -35,14 +37,25 @@ class TaskProvider extends ChangeNotifier {
     )).toSet();
   }
 
-  Future<void> addTask(PlantTask task) async {
+  Future<void> addTask(PlantTask task, {String? plantName}) async {
     // Insert the task rule and get its id back
     final taskId = await _taskDao.insertTask(task);
 
     // Generate instances based on recurrence
     final instances = _generateInstances(task.copyWith(id: taskId));
     for (final instance in instances) {
-      await _taskDao.insertInstance(instance);
+      final instanceId = await _taskDao.insertInstance(instance);
+
+      if (task.reminderTimeMinutes != null) {
+        await _notificationService?.scheduleNotification(
+          instanceId: instanceId,
+          plantName: plantName ?? 'your plant',
+          taskType: task.taskType,
+          customNote: task.customNote,
+          dueDate: instance.dueDate,
+          reminderTimeMinutes: task.reminderTimeMinutes!,
+        );
+      }
     }
 
     await loadInstances();
@@ -57,9 +70,9 @@ class TaskProvider extends ChangeNotifier {
         plantTaskId: task.id!,
         plantProfileId: task.plantProfileId,
         dueDate: task.startDate,
-        taskType: task.taskType,     
-        customNote: task.customNote,  
-        
+        taskType: task.taskType,
+        customNote: task.customNote,
+
       ));
     } else {
       DateTime current = task.startDate;
@@ -68,8 +81,8 @@ class TaskProvider extends ChangeNotifier {
           plantTaskId: task.id!,
           plantProfileId: task.plantProfileId,
           dueDate: current,
-          taskType: task.taskType,     
-          customNote: task.customNote,  
+          taskType: task.taskType,
+          customNote: task.customNote,
         ));
 
         if (task.recurrenceType == 'daily') {
@@ -86,24 +99,32 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> completeInstance(PlantTaskInstance instance) async {
-  final updated = PlantTaskInstance(
-    id: instance.id,
-    plantTaskId: instance.plantTaskId,
-    plantProfileId: instance.plantProfileId,
-    dueDate: instance.dueDate,
-    taskType: instance.taskType,
-    customNote: instance.customNote,
-    isCompleted: !instance.isCompleted,  // toggle instead of always true
-    completedAtMillis: !instance.isCompleted
-        ? DateTime.now().millisecondsSinceEpoch
-        : null,  // clear completedAt if uncompleting
-  );
-  await _taskDao.updateInstance(updated);
-  await loadInstances();
-}
+    // Cancel notification when marking complete
+    if (!instance.isCompleted && instance.id != null) {
+      await _notificationService?.cancelNotification(instance.id!);
+    }
+
+    final updated = PlantTaskInstance(
+      id: instance.id,
+      plantTaskId: instance.plantTaskId,
+      plantProfileId: instance.plantProfileId,
+      dueDate: instance.dueDate,
+      taskType: instance.taskType,
+      customNote: instance.customNote,
+      isCompleted: !instance.isCompleted,
+      completedAtMillis: !instance.isCompleted
+          ? DateTime.now().millisecondsSinceEpoch
+          : null,
+    );
+    await _taskDao.updateInstance(updated);
+    await loadInstances();
+  }
 
   // Delete just this one instance
   Future<void> deleteInstance(PlantTaskInstance instance) async {
+    if (instance.id != null) {
+      await _notificationService?.cancelNotification(instance.id!);
+    }
     await _taskDao.deleteInstance(instance);
     await loadInstances();
   }
@@ -114,6 +135,8 @@ class TaskProvider extends ChangeNotifier {
       instance.plantTaskId,
       instance.dueDate,
     );
+    final ids = future.where((i) => i.id != null).map((i) => i.id!).toList();
+    await _notificationService?.cancelNotifications(ids);
     for (final i in future) {
       await _taskDao.deleteInstance(i);
     }
@@ -123,6 +146,8 @@ class TaskProvider extends ChangeNotifier {
   // Delete all instances for a task rule
   Future<void> deleteAllInstances(PlantTask task) async {
     final all = await _taskDao.getInstancesForTask(task.id!);
+    final ids = all.where((i) => i.id != null).map((i) => i.id!).toList();
+    await _notificationService?.cancelNotifications(ids);
     for (final i in all) {
       await _taskDao.deleteInstance(i);
     }
@@ -130,7 +155,7 @@ class TaskProvider extends ChangeNotifier {
     await loadInstances();
   }
 
-  // Retrieve task 
+  // Retrieve task
 
   Future<PlantTask?> getTaskById(int id) async {
   return await _taskDao.getTaskById(id);

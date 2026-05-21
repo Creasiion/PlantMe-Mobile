@@ -19,7 +19,7 @@ abstract class PlantTaskDao {
 
   // PlantTaskInstance (occurrences)
   @insert
-  Future<void> insertInstance(PlantTaskInstance instance);
+  Future<int> insertInstance(PlantTaskInstance instance);
 
   @Query('SELECT * FROM PlantTaskInstance WHERE dueDate = :date')
   Future<List<PlantTaskInstance>> getInstancesForDate(DateTime date);
