@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:plant_me/classes/plant_id_result.dart';
 import 'package:plant_me/classes/plant_profile.dart';
 import 'package:plant_me/providers/plant_provider.dart';
 import 'package:plant_me/services/plant_id_service.dart';
@@ -23,7 +24,8 @@ class _NewPlantViewState extends State<NewPlantView> {
 
   File? _selectedPlantImage;
   bool _identifying = false;
-  Color _selectedColor = Colors.green; // default color
+  Color _selectedColor = Colors.green;
+  PlantIdResult? _identificationResult;
   final ImagePicker _picker = ImagePicker();
   final PlantIdService _plantIdService = PlantIdService();
 
@@ -44,6 +46,7 @@ class _NewPlantViewState extends State<NewPlantView> {
       final result = await _plantIdService.identifyFromImage(imageFile);
       if (result != null) {
         setState(() {
+          _identificationResult = result;
           _plantSpeciesController.text = result.species;
           _plantDescriptionController.text = result.description;
           _identifying = false;
@@ -72,6 +75,7 @@ class _NewPlantViewState extends State<NewPlantView> {
         final result = await _plantIdService.identifyFromImage(imageFile);
         if (result != null) {
           setState(() {
+            _identificationResult = result;
             _plantSpeciesController.text = result.species;
             _plantDescriptionController.text = result.description;
             _identifying = false;
@@ -100,6 +104,7 @@ class _NewPlantViewState extends State<NewPlantView> {
 
     if (result != null) {
       setState(() {
+        _identificationResult = result;
         _plantSpeciesController.text = result.species;
         _plantDescriptionController.text = result.description;
         _identifying = false;
@@ -182,8 +187,10 @@ class _NewPlantViewState extends State<NewPlantView> {
       plantSpecies: _plantSpeciesController.text.trim(),
       plantImagePath: permanentImage.path,
       plantDescription: _plantDescriptionController.text.trim(),
+      descriptionGpt: _identificationResult?.descriptionGpt ?? '',
+      commonUses: _identificationResult?.commonUses ?? '',
       timeCreated: DateTime.now(),
-      colorValue: _selectedColor.value, // save the color
+      colorValue: _selectedColor.toARGB32(),
     );
 
     await context.read<PlantProvider>().addPlantProfile(plantProfile);
@@ -276,7 +283,6 @@ class _NewPlantViewState extends State<NewPlantView> {
               minLines: 4,
             ),
             const SizedBox(height: 16),
-            // Color picker row
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Plant Color'),

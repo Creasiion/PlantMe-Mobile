@@ -14,7 +14,7 @@ class PlantIdService {
       final base64Image = base64Encode(imageBytes);
 
       final response = await http.post(
-        Uri.parse('$_baseUrl/identification?details=common_names,best_watering,best_light_condition,toxicity'),
+        Uri.parse('$_baseUrl/identification?details=common_names,best_watering,best_light_condition,toxicity,description_gpt,common_uses'),
         headers: {
           'Api-Key': _apiKey,
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ class PlantIdService {
     // Second call to use access_token to get full details
     final detailResponse = await http.get(
       Uri.parse(
-        '$_baseUrl/kb/plants/$accessToken?details=common_names,best_watering,best_light_condition,toxicity',
+        '$_baseUrl/kb/plants/$accessToken?details=common_names,best_watering,best_light_condition,toxicity,description_gpt,common_uses',
       ),
       headers: {
         'Api-Key': _apiKey,

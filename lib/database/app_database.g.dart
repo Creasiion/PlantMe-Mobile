@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `PlantProfile` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantName` TEXT NOT NULL, `plantSpecies` TEXT NOT NULL, `plantImagePath` TEXT NOT NULL, `plantDescription` TEXT NOT NULL, `timeCreated` INTEGER NOT NULL, `colorValue` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `PlantProfile` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantName` TEXT NOT NULL, `plantSpecies` TEXT NOT NULL, `plantImagePath` TEXT NOT NULL, `plantDescription` TEXT NOT NULL, `descriptionGpt` TEXT NOT NULL, `commonUses` TEXT NOT NULL, `timeCreated` INTEGER NOT NULL, `colorValue` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `PlantTask` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `plantProfileId` INTEGER NOT NULL, `taskType` TEXT NOT NULL, `customNote` TEXT, `recurrenceType` TEXT NOT NULL, `recurrenceInterval` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDateMillis` INTEGER, `reminderTimeMinutes` INTEGER)');
         await database.execute(
@@ -135,6 +135,8 @@ class _$PlantDao extends PlantDao {
                   'plantSpecies': item.plantSpecies,
                   'plantImagePath': item.plantImagePath,
                   'plantDescription': item.plantDescription,
+                  'descriptionGpt': item.descriptionGpt,
+                  'commonUses': item.commonUses,
                   'timeCreated': _dateTimeConverter.encode(item.timeCreated),
                   'colorValue': item.colorValue
                 }),
@@ -148,6 +150,8 @@ class _$PlantDao extends PlantDao {
                   'plantSpecies': item.plantSpecies,
                   'plantImagePath': item.plantImagePath,
                   'plantDescription': item.plantDescription,
+                  'descriptionGpt': item.descriptionGpt,
+                  'commonUses': item.commonUses,
                   'timeCreated': _dateTimeConverter.encode(item.timeCreated),
                   'colorValue': item.colorValue
                 }),
@@ -161,6 +165,8 @@ class _$PlantDao extends PlantDao {
                   'plantSpecies': item.plantSpecies,
                   'plantImagePath': item.plantImagePath,
                   'plantDescription': item.plantDescription,
+                  'descriptionGpt': item.descriptionGpt,
+                  'commonUses': item.commonUses,
                   'timeCreated': _dateTimeConverter.encode(item.timeCreated),
                   'colorValue': item.colorValue
                 });
@@ -187,6 +193,8 @@ class _$PlantDao extends PlantDao {
             plantSpecies: row['plantSpecies'] as String,
             plantImagePath: row['plantImagePath'] as String,
             plantDescription: row['plantDescription'] as String,
+            descriptionGpt: row['descriptionGpt'] as String,
+            commonUses: row['commonUses'] as String,
             timeCreated: _dateTimeConverter.decode(row['timeCreated'] as int),
             colorValue: row['colorValue'] as int));
   }

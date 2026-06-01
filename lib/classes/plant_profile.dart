@@ -9,8 +9,10 @@ class PlantProfile {
   final String plantSpecies;
   final String plantImagePath;
   final String plantDescription;
+  final String descriptionGpt;
+  final String commonUses;
   final DateTime timeCreated;
-  final int colorValue; // stores Color.value as int
+  final int colorValue;
 
   PlantProfile({
     this.id,
@@ -18,6 +20,8 @@ class PlantProfile {
     required this.plantSpecies,
     required this.plantImagePath,
     required this.plantDescription,
+    required this.descriptionGpt,
+    required this.commonUses,
     required this.timeCreated,
     required this.colorValue,
   });

@@ -1,13 +1,16 @@
 class PlantIdResult {
   final String species;
   final String description;
+  final String descriptionGpt;
+  final String commonUses;
 
   PlantIdResult({
     required this.species,
     required this.description,
+    required this.descriptionGpt,
+    required this.commonUses,
   });
 
-  // parses API v3 for identification response
   factory PlantIdResult.fromJson(Map<String, dynamic> json) {
     final suggestion = json['result']['classification']['suggestions'][0];
     final details = suggestion['details'] ?? {};
@@ -19,21 +22,24 @@ class PlantIdResult {
     return PlantIdResult(
       species: suggestion['name'] ?? 'Unknown',
       description: 'Watering: $watering | Light: $light | Toxicity: $toxicity',
+      descriptionGpt: details['description_gpt'] ?? '',
+      commonUses: details['common_uses'] ?? '',
     );
   }
 
-  // Used by searchByName to parses the kb/plants/name_search response
   factory PlantIdResult.fromSearchJson(Map<String, dynamic> json) {
-  final watering = json['best_watering'] ?? 'Unknown';
-  final light = json['best_light_condition'] ?? 'Unknown';
-  final toxicity = json['toxicity'] ?? 'Unknown';
-  final commonNames = json['common_names'] as List?;
+    final watering = json['best_watering'] ?? 'Unknown';
+    final light = json['best_light_condition'] ?? 'Unknown';
+    final toxicity = json['toxicity'] ?? 'Unknown';
+    final commonNames = json['common_names'] as List?;
 
-  return PlantIdResult(
-    species: commonNames != null && commonNames.isNotEmpty
-        ? commonNames[0]
-        : 'Unknown',
-    description: 'Watering: $watering | Light: $light | Toxicity: $toxicity',
-  );
-}
+    return PlantIdResult(
+      species: commonNames != null && commonNames.isNotEmpty
+          ? commonNames[0]
+          : 'Unknown',
+      description: 'Watering: $watering | Light: $light | Toxicity: $toxicity',
+      descriptionGpt: json['description_gpt'] ?? '',
+      commonUses: json['common_uses'] ?? '',
+    );
+  }
 }
