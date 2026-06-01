@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plant_me/views/plant_detail_view.dart';
 import 'dart:io';
 import 'new_plant_view.dart';
 import 'package:plant_me/providers/plant_provider.dart';
@@ -110,26 +111,38 @@ class _MyHomePageState extends State<MyHomePage> {
               child: SizedBox(height: 10),
             ),
 
-            SliverGrid( // Later needs onclick to specified profile
+            SliverGrid(
               delegate: SliverChildBuilderDelegate((context, index) {
                   final plant = plants[index];
 
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.file(
-                            File(plant.plantImagePath),
-                            fit: BoxFit.cover
+                  return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PlantProfileView(
+                              plant: plant,
+                            ),
+                          ),
+                        );
+                      },
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.file(
+                              File(plant.plantImagePath),
+                              fit: BoxFit.cover
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        plant.plantName,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        Text(
+                          plant.plantName,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   );
                 },
                 childCount: plants.length > 9 ? 9 : plants.length,
