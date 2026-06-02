@@ -11,6 +11,8 @@ void main() {
         plantSpecies: 'Jeane Wickedocia',
         plantImagePath: 'test/dummy.jpg',
         plantDescription: 'A leafy friend',
+        descriptionGpt: 'A plant that loves shade.',
+        commonUses: 'Decoration',
         timeCreated: now,
         colorValue: Colors.green.toARGB32(),
       );
@@ -19,6 +21,8 @@ void main() {
       expect(profile.plantSpecies, 'Jeane Wickedocia');
       expect(profile.plantImagePath, 'test/dummy.jpg');
       expect(profile.plantDescription, 'A leafy friend');
+      expect(profile.descriptionGpt, 'A plant that loves shade.');
+      expect(profile.commonUses, 'Decoration');
       expect(profile.timeCreated, now);
       expect(profile.colorValue, Colors.green.toARGB32());
     });
@@ -29,6 +33,8 @@ void main() {
         plantSpecies: 'Cactasaurus',
         plantImagePath: 'test/dummy.jpg',
         plantDescription: '',
+        descriptionGpt: '',
+        commonUses: '',
         timeCreated: DateTime.now(),
         colorValue: Colors.green.toARGB32(),
       );
@@ -42,6 +48,8 @@ void main() {
         plantSpecies: 'Cactasaurus',
         plantImagePath: 'test/dummy.jpg',
         plantDescription: '',
+        descriptionGpt: '',
+        commonUses: '',
         timeCreated: DateTime.now(),
         colorValue: Colors.blue.toARGB32(),
       );

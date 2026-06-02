@@ -37,6 +37,7 @@ class _CalendarViewState extends State<CalendarView> {
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
+            availableCalendarFormats: const {CalendarFormat.month: 'Month'},
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {

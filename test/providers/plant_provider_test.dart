@@ -37,6 +37,8 @@ PlantProfile _makePlant({
     plantSpecies: 'Species',
     plantImagePath: 'test/dummy.jpg',
     plantDescription: 'Description',
+    descriptionGpt: '',
+    commonUses: '',
     timeCreated: created ?? DateTime.now(),
     colorValue: Colors.green.toARGB32(),
   );

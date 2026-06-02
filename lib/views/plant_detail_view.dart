@@ -10,42 +10,61 @@ class PlantProfileView extends StatelessWidget {
 
   String _extractWatering() {
     final parts = plant.plantDescription.split('|');
-
     for (final part in parts) {
       if (part.contains('Watering:')) {
         return part.replaceAll('Watering:', '').trim();
       }
     }
-
     return 'Unknown';
   }
 
   String _extractLight() {
     final parts = plant.plantDescription.split('|');
-
     for (final part in parts) {
       if (part.contains('Light:')) {
         return part.replaceAll('Light:', '').trim();
       }
     }
-
     return 'Unknown';
   }
 
   String _extractToxicity() {
     final parts = plant.plantDescription.split('|');
-
     for (final part in parts) {
       if (part.contains('Toxicity:')) {
         return part.replaceAll('Toxicity:', '').trim();
       }
     }
-
     return 'Unknown';
+  }
+
+  Widget _section(String title, String body) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          body,
+          style: const TextStyle(fontSize: 18, height: 1.4),
+        ),
+        const SizedBox(height: 30),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final description = plant.descriptionGpt.isNotEmpty
+        ? plant.descriptionGpt
+        : 'A beautiful addition to your plant collection 🌱';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -59,9 +78,9 @@ class PlantProfileView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
+                  // Header: image + name + species
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
@@ -72,13 +91,10 @@ class PlantProfileView extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
-
                       const SizedBox(width: 20),
-
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               plant.plantName,
@@ -87,25 +103,12 @@ class PlantProfileView extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-
                             const SizedBox(height: 8),
-
                             Text(
                               plant.plantSpecies,
                               style: const TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey,
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            Text(
-                              plant.descriptionGpt.isNotEmpty
-                                  ? plant.descriptionGpt
-                                  : 'A beautiful addition to your plant collection 🌱',
-                              style: const TextStyle(
-                                fontSize: 15,
                               ),
                             ),
                           ],
@@ -116,79 +119,18 @@ class PlantProfileView extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // Watering
-                  const Text(
-                    'Watering 💧',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    _extractWatering(),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Light
-                  const Text(
-                    'Light ☀️',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    _extractLight(),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Toxicity
-                  const Text(
-                    'Toxicity 🤢',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    _extractToxicity(),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Common Uses
-                  const Text(
+                  _section('About 🌱', description),
+                  _section('Watering 💧', _extractWatering()),
+                  _section('Light ☀️', _extractLight()),
+                  _section('Toxicity 🤢', _extractToxicity()),
+                  _section(
                     'Common Uses 🌿',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
                     plant.commonUses.isEmpty
                         ? 'No common uses available.'
                         : plant.commonUses,
-                    style: const TextStyle(fontSize: 18),
                   ),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

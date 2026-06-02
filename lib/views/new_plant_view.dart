@@ -242,14 +242,14 @@ class _NewPlantViewState extends State<NewPlantView> {
                 child: _identifying
                     ? const Center(child: CircularProgressIndicator())
                     : _selectedPlantImage != null
-                        ? Image.file(_selectedPlantImage!, fit: BoxFit.cover)
-                        : const Center(
-                            child: Icon(
-                              Icons.add_a_photo,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
+                    ? Image.file(_selectedPlantImage!, fit: BoxFit.cover)
+                    : const Center(
+                  child: Icon(
+                    Icons.add_a_photo,
+                    size: 50,
+                    color: Colors.grey,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),

@@ -86,7 +86,7 @@ class _NewTaskViewState extends State<NewTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    final plants = context.read<PlantProvider>().plantProfiles;
+    final plants = context.watch<PlantProvider>().plantProfiles;
 
     return Scaffold(
       appBar: AppBar(

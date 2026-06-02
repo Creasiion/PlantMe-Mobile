@@ -21,10 +21,8 @@ class PlantProvider extends ChangeNotifier {
       ..addAll(plants);
     notifyListeners();
   }
-
   Future<void> addPlantProfile(PlantProfile plantProfile) async {
     await _plantDao.insertPlant(plantProfile);
-    _plantProfiles.add(plantProfile);
-    notifyListeners();
+    await loadPlants();
   }
 }
