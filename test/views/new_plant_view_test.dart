@@ -49,5 +49,88 @@ void main() {
       expect(find.text('Take a photo'), findsOneWidget);
       expect(find.text('Choose from gallery'), findsOneWidget);
     });
+
+    testWidgets('displays search by name field and button', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      expect(find.text('or Search by name'), findsOneWidget);
+      expect(find.text('Search'), findsOneWidget);
+    });
+
+    testWidgets('can enter text in Plant Name field', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Plant Name'),
+        'My Fern',
+      );
+      expect(find.text('My Fern'), findsOneWidget);
+    });
+
+    testWidgets('can enter text in Species field', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Species'),
+        'Nephrolepis',
+      );
+      expect(find.text('Nephrolepis'), findsOneWidget);
+    });
+
+    testWidgets('can enter text in Description field', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      // Scroll down to see description field
+      await tester.drag(
+          find.byType(SingleChildScrollView), const Offset(0, -100));
+      await tester.pump();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Description'),
+        'A beautiful fern',
+      );
+      expect(find.text('A beautiful fern'), findsOneWidget);
+    });
+
+    testWidgets('can enter text in search field', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'or Search by name'),
+        'Boston Fern',
+      );
+      expect(find.text('Boston Fern'), findsOneWidget);
+    });
+
+    testWidgets('tapping Search with empty field does nothing', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      // Tap search with empty search field
+      await tester.tap(find.text('Search'));
+      await tester.pump();
+
+      // No snackbar or loading indicator
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('image area shows add_a_photo icon initially', (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      // Container should show the camera icon
+      expect(find.byIcon(Icons.add_a_photo), findsOneWidget);
+    });
+
+    testWidgets('source chooser has camera and gallery options',
+        (tester) async {
+      await tester.pumpWidget(_wrapInApp(const NewPlantView()));
+
+      // Open source chooser
+      await tester.tap(find.byIcon(Icons.add_a_photo));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.photo_camera), findsOneWidget);
+      expect(find.byIcon(Icons.photo_library), findsOneWidget);
+    });
   });
 }
+

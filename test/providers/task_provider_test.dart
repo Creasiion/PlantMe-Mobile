@@ -236,6 +236,62 @@ void main() {
       expect(provider.instances, isEmpty);
     });
 
+    test('deleteInstanceAndFollowing removes this and future instances',
+        () async {
+      final dao = FakeTaskDao();
+      final provider = TaskProvider(dao);
+      final start = DateTime(2025, 6, 1);
+      final end = DateTime(2025, 6, 15);
+
+      await provider.addTask(_makeTask(
+        recurrenceType: 'weekly',
+        startDate: start,
+        endDate: end,
+      ));
+
+      expect(provider.instances.length, 3); // Jun 1, 8, 15
+
+      // Delete from Jun 8 onward
+      final jun8Instance = provider.instances
+          .firstWhere((i) => i.dueDate == DateTime(2025, 6, 8));
+      await provider.deleteInstanceAndFollowing(jun8Instance);
+
+      expect(provider.instances.length, 1);
+      expect(provider.instances.first.dueDate, DateTime(2025, 6, 1));
+    });
+
+    test('loadInstances refreshes from database', () async {
+      final dao = FakeTaskDao();
+      final provider = TaskProvider(dao);
+
+      await provider.addTask(_makeTask(recurrenceType: 'none'));
+      expect(provider.instances.length, 1);
+
+      // Directly remove from dao and reload
+      final instances = await dao.getAllInstances();
+      await dao.deleteInstance(instances.first);
+      await provider.loadInstances();
+      expect(provider.instances, isEmpty);
+    });
+
+    test('getTaskById returns task', () async {
+      final dao = FakeTaskDao();
+      final provider = TaskProvider(dao);
+
+      await provider.addTask(_makeTask(recurrenceType: 'none'));
+      final task = await provider.getTaskById(1);
+      expect(task, isNotNull);
+      expect(task!.plantProfileId, 1);
+    });
+
+    test('getTaskById returns null for non-existent id', () async {
+      final dao = FakeTaskDao();
+      final provider = TaskProvider(dao);
+
+      final task = await provider.getTaskById(999);
+      expect(task, isNull);
+    });
+
     test('datesWithInstances returns correct set of dates', () async {
       final provider = TaskProvider(FakeTaskDao());
       final start = DateTime(2025, 6, 1);
